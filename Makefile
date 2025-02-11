@@ -39,7 +39,7 @@ clean:
 
 fclean: clean
 	@echo "$(RED)Cleaning all...$(RESET)"
-	@rm -f $(NAME)
+	@rm -f $(NAME) outfile
 	@make -s -C libft fclean
 
 re: fclean all

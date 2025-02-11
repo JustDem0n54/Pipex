@@ -62,17 +62,6 @@ int strlen_cmd(char **argv)
 	return (i - 3);
 }
 
-int	def_entry(int i, char **argv, int *pipefd)
-{
-	int entry;
-
-	if (i == 1)
-		entry = open(argv[i], O_RDONLY);
-	else
-		entry = pipefd[0];
-	return (entry);
-}
-
 int	def_output(int i, char **argv, int *pipefd)
 {
 	int output;
@@ -84,54 +73,67 @@ int	def_output(int i, char **argv, int *pipefd)
 	return (output);
 }
 
-void	exec_pid1(char **argv, char **env, int *pipefd, int i)
+void	exec_pid(t_var *var, int *pipefd, int entry, int output)
 {
 	char	**cmd;
 	char	*path;
-	int		entry;
-	int 	output;
 
-	entry = def_entry(i, argv, pipefd);
-	output = def_output(i, argv, pipefd);
 	dup2(entry, STDIN_FILENO);
 	dup2(output, STDOUT_FILENO);
 	close(output);
 	close(entry);
 	close(pipefd[0]);
 	close(pipefd[1]);
-	cmd = ft_split(argv[i + 1], ' ');
-	path = check_path(env, cmd[0]);
+	cmd = ft_split(var->cmd, ' ');
+	path = check_path(var->env, cmd[0]);
 	if (path == NULL)
-	{
-		free(path);
 		exit(EXIT_FAILURE);
-	}
-	execve(path, cmd, env);
+	execve(path, cmd, var->env);
+	exit(EXIT_FAILURE);
+}
+
+t_var *init_var(t_var *var, char **env, int argc)
+{
+	var = malloc(sizeof(t_var) * 1);
+	var->env = env;
+	var->ncmd = argc - 3;
+	return (var);
 }
 
 int main(int argc, char **argv, char **env)
 {
 	int pipefd[2];
-	pid_t pid1;
-	pid_t pid2;
+	pid_t pid;
+	int entryfd;
+	int outputfd;
 	int i = 1;
+	t_var *var;
 
-	if (argc != 5)
+	var = NULL;
+	if (argc < 5)
 	{
 		return (1);
 	}
-	if (pipe(pipefd) == -1)
-		return (0);
-	pid1 = fork();
-	if (pid1 == 0)
+	var = init_var(var, env, argc);
+	entryfd = open(argv[i], O_RDONLY);
+	while (i <= var->ncmd)
 	{
-		exec_pid1(argv, env, pipefd, i);
-	}
-	i++;
-	pid2 = fork();
-	if (pid2 == 0)
-	{
-		exec_pid1(argv, env, pipefd, i);
+		if (pipe(pipefd) == -1)
+			return (0);
+		outputfd = pipefd[1];
+		if (i == var->ncmd)
+			outputfd = open(argv[i + 2], O_CREAT | O_TRUNC | O_WRONLY, 00644);
+		pid = fork();
+		var->cmd = argv[i + 1];
+		if (pid == 0)
+		{
+			exec_pid(var, pipefd, entryfd, outputfd);
+		}
+		close(entryfd);
+		close(outputfd);
+		entryfd = pipefd[0];
+		i++;
+		// waitpid(pid, NULL, 0);
 	}
 	return (0);
 }
