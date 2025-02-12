@@ -4,7 +4,8 @@ GREEN = \033[0;32m
 RED = \033[0;31m
 RESET = \033[0m
 
-FILE = pipex.c
+FILE = pipex.c \
+		utils.c \
 	
 LIBFT = libft/libft.a
 RM = rm -f

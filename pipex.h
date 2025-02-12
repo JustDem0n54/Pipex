@@ -6,7 +6,7 @@
 /*   By: nrontard <nrontard@student.42perpignan.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/06 15:17:53 by nrontard          #+#    #+#             */
-/*   Updated: 2025/02/11 17:22:08 by nrontard         ###   ########.fr       */
+/*   Updated: 2025/02/12 17:36:31 by nrontard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,11 +22,18 @@
 
 typedef struct s_var
 {
-	char *cmd;
-	char **env;
-	int ncmd;
+	char	*cmd;
+	char	**env;
+	int		ncmd;
 }	t_var;
 
-
+void	free_split(char **str);
+int		strlen_cmd(char **argv);
+t_var	*init_var(t_var *var, char **env, int argc);
+char	*check_path(char **env, char *cmd);
+void	exec_pid(t_var *var, int *pipefd, int entry, int output);
+int		setup_pid(int entryfd, int outputfd, t_var *var, char **argv);
+int		set_outputfd(int outputfd, char **argv, int i);
+int		set_entryfd(int entryfd, char **argv, int i);
 
 #endif
