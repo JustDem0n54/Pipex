@@ -6,7 +6,7 @@
 /*   By: nrontard <nrontard@student.42perpignan.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/12 11:11:49 by nrontard          #+#    #+#             */
-/*   Updated: 2025/02/07 14:47:41 by nrontard         ###   ########.fr       */
+/*   Updated: 2025/02/13 14:57:06 by nrontard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 # include <stdio.h>
 # include <string.h>
 # include <stdlib.h>
+# include "get_next_line_bonus.h"
 
 int		ft_isalnum(int c);
 int		ft_isalpha(int c);

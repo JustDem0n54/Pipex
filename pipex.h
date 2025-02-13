@@ -6,7 +6,7 @@
 /*   By: nrontard <nrontard@student.42perpignan.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/06 15:17:53 by nrontard          #+#    #+#             */
-/*   Updated: 2025/02/12 17:36:31 by nrontard         ###   ########.fr       */
+/*   Updated: 2025/02/13 15:38:51 by nrontard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@ typedef struct s_var
 	char	*cmd;
 	char	**env;
 	int		ncmd;
+	int		i;
 }	t_var;
 
 void	free_split(char **str);

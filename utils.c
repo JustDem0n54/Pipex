@@ -6,7 +6,7 @@
 /*   By: nrontard <nrontard@student.42perpignan.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/12 13:23:34 by nrontard          #+#    #+#             */
-/*   Updated: 2025/02/12 17:36:52 by nrontard         ###   ########.fr       */
+/*   Updated: 2025/02/13 17:16:12 by nrontard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,7 @@ t_var	*init_var(t_var *var, char **env, int argc)
 	var = malloc(sizeof(t_var) * 1);
 	var->env = env;
 	var->ncmd = argc - 3;
+	var->i = 0;
 	return (var);
 }
 
@@ -56,11 +57,23 @@ int	set_outputfd(int outputfd, char **argv, int i)
 
 int	set_entryfd(int entryfd, char **argv, int i)
 {
-	entryfd = open(argv[i + 1], O_RDONLY);
-	if (entryfd == -1)
+	if (i == 1)
 	{
-		ft_putstr_fd(argv[i + 1], 2);
-		ft_putstr_fd(": No Such file or directory\n", 2);
+		entryfd = open("temp", O_RDONLY);
+		if (entryfd == -1)
+		{
+			ft_putstr_fd("temp", 2);
+			ft_putstr_fd(": No Such file or directory\n", 2);
+		}
+	}
+	else if (i == 0)
+	{
+		entryfd = open(argv[i + 1], O_RDONLY);
+		if (entryfd == -1)
+		{
+			ft_putstr_fd(argv[i + 1], 2);
+			ft_putstr_fd(": No Such file or directory\n", 2);
+		}
 	}
 	return (entryfd);
 }

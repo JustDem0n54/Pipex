@@ -20,11 +20,11 @@ OBJS = $(addprefix $(OBJDIR)/, $(SRCS:.c=.o))
 all:	${NAME} 
 	@echo "${GREEN}Compilation OK !${RESET}"
 
-${LIBFT}:	
-	@echo "${GREEN}Compilation LIBFT...${RESET}"
+${LIBFT}:
 	@make -s -C libft all
 
 ${NAME}:	${OBJS} ${LIBFT}
+	@echo "${GREEN}<-------PIPEX------->${RESET}"
 	@echo "${GREEN}Compilation PIPEX...${RESET}"
 	@${CC} ${CFLAGS} -o ${NAME} ${OBJS} ${LIBFT}
 

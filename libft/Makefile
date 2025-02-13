@@ -7,6 +7,7 @@ LIBC	= \
 		ft_memcmp.c ft_strnstr.c ft_atoi.c ft_calloc.c ft_strdup.c ft_substr.c \
 		ft_strjoin.c ft_strtrim.c ft_split.c ft_itoa.c ft_strmapi.c ft_striteri.c \
 		ft_putchar_fd.c ft_putstr_fd.c ft_putendl_fd.c ft_putnbr_fd.c ft_strnjoin.c \
+		get_next_line_bonus.c get_next_line_utils_bonus.c \
 
 BONUS	= \
 		ft_lstnew_bonus.c ft_lstadd_front_bonus.c ft_lstsize_bonus.c \
@@ -21,26 +22,42 @@ OBJS	= ${SRCS:.c=.o}
 
 OBJSALL	= ${SRCSALL:.c=.o}
 
-CC	= cc
+PRINTF = ft_printf/ft_printf.a
+
+GREEN = \033[0;32m
+RED = \033[0;31m
+RESET = \033[0m
+
+CC	= cc -ggdb
 RM	= rm -f
 AR	= ar rc
 
 CFLAGS	= -Wall -Werror -Wextra
 
-.c.o:
-		${CC} ${CFLAGS} -c $< -o ${<:.c=.o}
-		
-${NAME}:	${OBJS}
-		${AR} ${NAME} ${OBJS}
-		
-all:		${NAME}
+all:		bonus
 
-bonus:		${OBJSALL}
-		${AR} ${NAME} ${OBJSALL}
+.c.o:
+	@${CC} ${CFLAGS} -c $< -o ${<:.c=.o}
+		
+${NAME}:	${OBJS} ${PRINTF}
+	@${AR} ${NAME} ${OBJS} ${PRINTF} -s
+
+${PRINTF}:	
+	@echo "${GREEN}<-------LIBFT------->${RESET}"
+	@echo "${GREEN}Compilation FT_PRINTF...${RESET}"
+	@make -s -C ft_printf all
+
+bonus:		${OBJSALL} ${PRINTF}
+	@echo "${GREEN}Compilation GNL...${RESET}"
+	@echo "${GREEN}Compilation LIBFT...${RESET}"
+	@${AR} ${NAME} ${OBJSALL} ${PRINTF}
+	@echo "${GREEN}Compilation OK !${RESET}"
+
 clean:
-		${RM} ${OBJSALL}
+	@${RM} ${OBJSALL}
+	@make -s -C ft_printf fclean
 		
 fclean:		clean
-		${RM} ${NAME}
+	@${RM} ${NAME}
 	
 re:		fclean all

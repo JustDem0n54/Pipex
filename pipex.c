@@ -58,6 +58,8 @@ void	exec_pid(t_var *var, int *pipefd, int entry, int output)
 	{
 		ft_putstr_fd("pipex: command not found: ", 2);
 		ft_putstr_fd(cmd[0], 2);
+		free_split(cmd);
+		free(var);
 		exit(EXIT_FAILURE);
 	}
 	execve(path, cmd, var->env);
@@ -68,20 +70,18 @@ int	setup_pid(int entryfd, int outputfd, t_var *var, char **argv)
 {
 	int		pipefd[2];
 	pid_t	pid;
-	int		i;
 
-	i = 0;
-	entryfd = set_entryfd(entryfd, argv, i);
-	while (++i <= var->ncmd)
+	entryfd = set_entryfd(entryfd, argv, var->i);
+	while (++(var->i) <= var->ncmd)
 	{
 		if (pipe(pipefd) == -1)
 			return (ft_putstr_fd("Error pipe.", 2), 1);
 		outputfd = pipefd[1];
-		if (i == var->ncmd)
-			outputfd = set_outputfd(outputfd, argv, i);
+		if (var->i == var->ncmd)
+			outputfd = set_outputfd(outputfd, argv, var->i);
 		if (entryfd != -1 && outputfd != -1)
 			pid = fork();
-		var->cmd = argv[i + 1];
+		var->cmd = argv[var->i + 1];
 		if (pid == 0)
 			exec_pid(var, pipefd, entryfd, outputfd);
 		close(entryfd);
@@ -90,6 +90,31 @@ int	setup_pid(int entryfd, int outputfd, t_var *var, char **argv)
 		wait(NULL);
 	}
 	return (0);
+}
+
+void	gest_heredoc(char *limiter)
+{
+	char	*line;
+	int		temp;
+
+	limiter = ft_strjoin(limiter, "\n");
+	temp = open("temp", O_CREAT | O_TRUNC | O_WRONLY, 00644);
+	while (1)
+	{
+		line = get_next_line(0);
+		if (line == NULL)
+			break ;
+		if (ft_strncmp(limiter, line, ft_strlen(line)) == 0)
+		{
+			free(line);
+			break ;
+		}
+		write(temp, line, ft_strlen(line));
+		free (line);
+	}
+	free (limiter);
+	close(temp);
+	return ;
 }
 
 int	main(int argc, char **argv, char **env)
@@ -107,10 +132,16 @@ int	main(int argc, char **argv, char **env)
 		return (1);
 	}
 	var = init_var(var, env, argc);
+	if (ft_strncmp("here_doc", argv[1], 20) == 0)
+	{
+		gest_heredoc(argv[2]);
+		var->i = 1;
+	}
 	if (setup_pid(entryfd, outputfd, var, argv) == 1)
 		return (1);
 	close(entryfd);
 	close(outputfd);
+	unlink("temp");
 	free(var);
 	return (0);
 }
